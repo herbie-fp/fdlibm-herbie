@@ -10,8 +10,16 @@
 (define log1p.fdlibm (get-ffi-obj "log1p" "fdlibm-pieces" (_fun _double -> _double)))
 (define log1pmd.fdlibm (get-ffi-obj "log1pmd" "fdlibm-pieces" (_fun _double -> _double)))
 
-#;(define-accelerator-impl log log.fdlibm (binary64) binary64 log.fdlibm)
-#;(define-accelerator-impl log1p log1p.fdlibm (binary64) binary64 log1p.fdlibm)
+(when log.fdlibm
+  (define-accelerator (acc-log real) real (lambda (x) (log x)))
+  (define-accelerator-impl acc-log log.fdlibm (binary64) binary64 log.fdlibm))
+
+(when log1p.fdlibm
+  (define-accelerator-impl log1p log1p.fdlibm (binary64) binary64 log1p.fdlibm))
+
+(when log1pmd.fdlibm
+  (define-accelerator (log1pmd real) real (lambda (x) (- (log1p x) (log1p (neg x)))))
+  (define-accelerator-impl log1pmd log1pmd.fdlibm (binary64) binary64 log1pmd.fdlibm))
 
 (module+ main
   (writeln (log.fdlibm 1.1))

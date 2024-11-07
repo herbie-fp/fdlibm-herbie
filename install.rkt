@@ -16,10 +16,10 @@
         (displayln line (current-output-port)))
       (for ([line (in-lines (fourth out))])
         (displayln line (current-error-port)))
-      (error 'avx-accelerators "Error running ~a" command)))
+      (error 'fdlibm-accelerators "Error running ~a" command)))
   
   (define build-location (build-path this-collection-path))
   (define lib-name (path-replace-extension "fdlibm-pieces.so" (system-type 'so-suffix)))
   (define lib-location (build-path (if user-specific? (find-user-lib-dir) (find-lib-dir)) lib-name))
-  (call-and-wait (string-append "gcc " (path->string build-location) "/fdlibm-pieces.c -mavx -shared -o " (path->string lib-location)))
+  (call-and-wait (string-append "gcc " (path->string build-location) "/fdlibm-pieces.c -shared -o " (path->string lib-location)))
 )
